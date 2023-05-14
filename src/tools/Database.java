@@ -82,10 +82,12 @@ public class Database {
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
+            System.out.print("\u001B[32m");
             while (rs.next()) {
                 System.out.println(rs.getString("matricula") + "\t" +
                         rs.getString("nome"));
             }
+            System.out.print("\u001B[0m");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }

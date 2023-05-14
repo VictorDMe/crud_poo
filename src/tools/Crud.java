@@ -123,7 +123,8 @@ public class Crud {
                 System.out.print("Digite a matricula: ");
                 scan.nextLine();
                 String matricula = scan.nextLine();
-                System.out.println("\nMATRÍCULA \t NOME");
+                System.out.println();
+                System.out.println("\u001B[34mMATRÍCULA \t NOME \u001B[0m");
                 db.selectWithFilter(matricula);
             } else if (crudOption == 'S') {
                 System.out.println("\nMATRÍCULA \tNOME");
