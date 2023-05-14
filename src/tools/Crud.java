@@ -12,7 +12,7 @@ public class Crud {
     public static char menu() {
 
         char crudOption;
-        char[] options = new char[] {'C', 'R', 'U', 'D', 'S'};
+        char[] options = new char[]{'C', 'R', 'U', 'D', 'S'};
 
         while (true) {
             System.out.println("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
@@ -63,8 +63,7 @@ public class Crud {
             if (!db.checkIsExist(matricula)) {
                 db.insert(nome, matricula);
                 System.out.println("Novo registro adicionado.");
-            }
-            else System.out.println("Já existe um registro com essa matrícula.");
+            } else System.out.println("Já existe um registro com essa matrícula.");
         }
 
         // Caso a opção +1 tenha sido escolhida:
@@ -79,9 +78,9 @@ public class Crud {
 
             System.out.println();
             for (int x = 0; x < q; x++) {
-                System.out.printf("Insira o nome do %d° aluno: ", x+1);
+                System.out.printf("Insira o nome do %d° aluno: ", x + 1);
                 nome = scan.nextLine();
-                System.out.printf("Insira a matrícula do %d° aluno: ", x+1);
+                System.out.printf("Insira a matrícula do %d° aluno: ", x + 1);
                 matricula = scan.nextLine();
 
                 alunos.add(new Aluno(nome, matricula));
@@ -93,8 +92,7 @@ public class Crud {
                 if (!db.checkIsExist(a.getMatricula())) {
                     db.insert(a.getNome(), a.getMatricula());
                     System.out.println("Novo registro adicionado.");
-                }
-                else System.out.println("Já existe um registro com essa matrícula.");
+                } else System.out.println("Já existe um registro com essa matrícula.");
             }
             System.out.println("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
         }
@@ -103,7 +101,7 @@ public class Crud {
     public static void ler() {
 
         char crudOption;
-        char[] options = new char[] {'F', 'S', 'V'};
+        char[] options = new char[]{'F', 'S', 'V'};
 
         do {
             System.out.println("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
@@ -130,8 +128,7 @@ public class Crud {
                 System.out.println("\nMATRÍCULA \tNOME");
                 db.selectAll();
             }
-        }
-        catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
             System.out.println(e.getMessage());
         }
     }
