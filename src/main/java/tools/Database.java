@@ -1,13 +1,26 @@
 package tools;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.*;
 
 public class Database {
-    private static final String DATABASENAME = "NOME_DO_BANCO.db";
+    private static final String DATABASE = "patoshop.db";
+    private static final String RELATIVE = System.getProperty("user.dir");
 
     public static void createNewDatabase() {
 
-        String url = "jdbc:sqlite:C:\\sqlite\\" + DATABASENAME;
+        // =========== CRIANDO DIRETORIO 'DATABASE' SE NÃO EXISTIR ===========
+        try {
+            Files.createDirectories(Paths.get(RELATIVE + "\\database"));
+            System.out.println("Diretório 'database' identificado!");
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+
+        // =========== CRIANDO BANCO DE DADOS OU SOMENTE SE CONECTANDO ===========
+        String url = "jdbc:sqlite:" + RELATIVE + "\\database\\" + DATABASE;
 
         try (Connection conn = DriverManager.getConnection(url)) {
             if (conn != null) {
@@ -16,6 +29,8 @@ public class Database {
                 System.out.println("Conexão com o banco estabelecida.");
             }
 
+        // =========== SQL INICIAL PARA CRIAÇÃO DAS TABELAS ===========
+            //TODO Alterar SQL para um que crie um schema de acordo com o feito pelo modelo
             String sql = "CREATE TABLE IF NOT EXISTS alunos (\n" +
                     "matricula TEXT PRIMARY KEY NOT NULL," +
                     "nome TEXT NOT NULL" +
@@ -34,7 +49,7 @@ public class Database {
 
         try {
             Class.forName("org.sqlite.JDBC");
-            conn = DriverManager.getConnection("jdbc:sqlite:C:\\sqlite\\" + DATABASENAME);
+            conn = DriverManager.getConnection("jdbc:sqlite:" + RELATIVE + "\\database\\" + DATABASE);
         } catch (SQLException | ClassNotFoundException e) {
             System.out.println(e.getMessage());
         }
