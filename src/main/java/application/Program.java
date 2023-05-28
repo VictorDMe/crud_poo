@@ -6,7 +6,7 @@ import static tools.Database.createNewDatabase;
 public class Program {
     public static void main(String[] args) {
 
-        char menuOption;
+        int menuOption;
         createNewDatabase();
 
         while (true) {
@@ -16,13 +16,12 @@ public class Program {
             System.out.println();
 
             // Fechar programa.
-            if (menuOption == 'S') break;
+            if (menuOption == 99) break;
 
             switch (menuOption) {
-                case 'C' -> inserir();
-                case 'R' -> ler();
-                case 'U' -> atualizar();
-                case 'D' -> deletar();
+                case 1 -> login();
+                case 2 -> buscar();
+                case 3 -> registro();
             }
         }
     }
