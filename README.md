@@ -1,5 +1,15 @@
-# crud_poo
-CRUD escrita em Java para a Lista 2 da disciplina de Programação Orientada a Objetos.
+# CRUD para Projeto de Programação Orientada a Objetos
 
-O código necessita que o driver do SQLITE esteja setado como dependência, o mesmo pode ser encontrado para donwload [clicando aqui](https://github.com/xerial/sqlite-jdbc).
+![GitHub issues](https://img.shields.io/github/issues-raw/VictorDMe/crud_poo?color=008000&style=for-the-badge)
+![GitHub milestones](https://img.shields.io/github/milestones/open/VictorDMe/crud_poo?label=Entregas%20Pendentes&style=for-the-badge)
+![GitHub repo size](https://img.shields.io/github/repo-size/VictorDMe/crud_poo?label=tamanho%20total&style=for-the-badge)
 
+## Descrição
+CRUD escrita em Java para o projeto final da disciplina de Programação Orientada a Objetos.
+
+## Entregas
+- [x] Lista 1
+- [x] Lista 2
+- [ ] Lista 3
+- [ ] Lista 4
+- [ ] Entrega final
