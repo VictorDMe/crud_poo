@@ -21,7 +21,7 @@ public class Aluno {
         this.nome = nome;
     }
 
-    public void setMatricula(String nome) {
+    public void setMatricula(String matricula) {
         this.matricula = matricula;
     }
 }
