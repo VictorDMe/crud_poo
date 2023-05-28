@@ -9,148 +9,127 @@ public class Crud {
     static Scanner scan = new Scanner(System.in);
     static Database db = new Database();
 
-    public static char menu() {
+    public static int menu() {
 
-        char crudOption;
-        char[] options = new char[]{'C', 'R', 'U', 'D', 'S'};
+        int option;
 
         while (true) {
-            System.out.println("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
-            System.out.println(
-                    """
-                            C - Criar;\s
-                            R - Ler;\s
-                            U - Atualizar;\s
-                            D - Deletar;\s
-
-                            S - Sair""");
-            System.out.println("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
+            System.out.println("================================================================");
+            System.out.println("                      PATOSHOP - HOME");
+            System.out.println("================================================================");
+            System.out.println("              1- Login  2- Registro  99 - Sair ");
+            System.out.println("----------------------------------------------------------------");
+            System.out.println("3- Buscar produtos");
+            System.out.println("----------------------------------------------------------------");
+            System.out.println("Produtos em destaque:");
+            System.out.println("%s \n"
+            		+ "%s \n"
+            		+ "%s ");
+            System.out.print("14- Listar top 10 produtos \n");
+            System.out.println("----------------------------------------------------------------");
+            System.out.println("Produtos mais vendidos:");
+            System.out.println("%s \n"
+            		+ "%s \n"
+            		+ "%s");
+            System.out.print("24- Listar top 10 produtos mais vendidos \n");
+            System.out.println("----------------------------------------------------------------");
+            System.out.println("Top 3 vendedores:");
+            System.out.println("%s \n"
+            		+ "%s \n"
+            		+ "%s");
+            System.out.print("34- Listar top 10 produtos mais vendidos\n");
+            System.out.println("----------------------------------------------------------------");
+            System.out.println("Categorias");
+            System.out.println("%s");
+            System.out.println("%s");
+            System.out.println("%s");
+            System.out.println("%s");
+            System.out.println("----------------------------------------------------------------");
+            System.out.println("\n----------------------------------------------------------------");
             System.out.print("Digite sua opção: ");
-            crudOption = Character.toUpperCase(scan.next().charAt(0));
-
-            // Limpando Buffer
-            scan.nextLine();
-
-            if (!(new String(options).indexOf(crudOption) == -1)) return crudOption;
+            
+            option = scan.nextInt();
+            return option;
         }
     }
-
-    public static void inserir() {
-
-        char option;
-
-        String nome;
-        String matricula;
-
-        do {
-            System.out.print("""
-                    =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-                    A - Adicionar somente um aluno;
-                    B - Adicionar +1 de um aluno;
-                    =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-                    Digite sua opção:\s""");
-            option = Character.toUpperCase(scan.next().charAt(0));
-            scan.nextLine();
-        } while ((option != 'A') && (option != 'B'));
-        System.out.println();
-        // Caso a opção 'somente um' tenha sido escolhida:
-        if (option == 'A') {
-            System.out.print("Insira o nome do aluno: ");
-            nome = scan.nextLine();
-            System.out.print("Insira a matrícula do aluno: ");
-            matricula = scan.nextLine();
-
-            if (!db.checkIsExist(matricula)) {
-                db.insert(nome, matricula);
-                System.out.println("Novo registro adicionado.");
-            } else System.out.println("Já existe um registro com essa matrícula.");
-        }
-
-        // Caso a opção +1 tenha sido escolhida:
-        else {
-            int q;
-            ArrayList<Aluno> alunos = new ArrayList<>();
-
-            System.out.print("Quantidade de alunos que serão digitados: ");
-            q = scan.nextInt();
-            System.out.println();
-            scan.nextLine();
-
-            System.out.println();
-            for (int x = 0; x < q; x++) {
-                System.out.printf("Insira o nome do %d° aluno: ", x + 1);
-                nome = scan.nextLine();
-                System.out.printf("Insira a matrícula do %d° aluno: ", x + 1);
-                matricula = scan.nextLine();
-
-                alunos.add(new Aluno(nome, matricula));
-            }
-
-            System.out.println("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
-            for (Aluno a : alunos) {
-                System.out.printf("\nTentando adicionar %s ao banco...\n", a.getMatricula());
-                if (!db.checkIsExist(a.getMatricula())) {
-                    db.insert(a.getNome(), a.getMatricula());
-                    System.out.println("Novo registro adicionado.");
-                } else System.out.println("Já existe um registro com essa matrícula.");
-            }
-            System.out.println("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
-        }
+    public static void login(){
+    	int escolha;
+    	do {
+    		System.out.println("================================================================");
+	        System.out.println("                      PATOSHOP - LOGIN");
+	        System.out.println("================================================================");
+	        System.out.println("Escolha o perfil de acesso: ");
+	        System.out.println("1- Acesso publico");
+	        System.out.println("2- Anunciante");
+	        System.out.println("3- Comprador");
+	        System.out.println("4- Super Admin");
+	        
+	        System.out.print("Continuar como: ");
+	        escolha = scan.nextInt();
+	        
+        	switch(escolha) {
+        	case 2:
+        		System.out.println("Usuario: ");
+        		System.out.println("Senha: ");
+        	}
+    	} while(escolha >= 1 && escolha <= 4);
     }
-
-    public static void ler() {
-
-        char crudOption;
-        char[] options = new char[]{'F', 'S', 'V'};
-
-        do {
-            System.out.println("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
-            System.out.println(
-                    """
-                            F - Com filtro;\s
-                            S - Sem filtro;\s
-                            V - Voltar""");
-            System.out.println("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
-            System.out.print("Digite sua opção: ");
-            crudOption = Character.toUpperCase(scan.next().charAt(0));
-
-        } while (new String(options).indexOf(crudOption) == -1);
-
-        try {
-            if (crudOption == 'F') {
-                System.out.print("Digite a matricula: ");
-                scan.nextLine();
-                String matricula = scan.nextLine();
-                System.out.println();
-                System.out.println("\u001B[34mMATRÍCULA \t NOME \u001B[0m");
-                db.selectWithFilter(matricula);
-            } else if (crudOption == 'S') {
-                System.out.println("\nMATRÍCULA \tNOME");
-                db.selectAll();
-            }
-        } catch (ClassNotFoundException e) {
-            System.out.println(e.getMessage());
-        }
+    
+    public static void registro() {
+    	String username;
+    	String email;
+    	String password;
+    	int cpf;
+    	int numCelular;
+    	
+    	
+    	System.out.println("================================================================");
+        System.out.println("                      PATOSHOP - REGISTRAR-SE");
+        System.out.println("================================================================");
+        System.out.println("Usuario: ");
+        username = scan.nextLine();
+        System.out.println("Numero do celular: ");
+        numCelular = scan.nextInt();
+        System.out.println("CPF: ");
+        cpf = scan.nextInt();
+        System.out.println("Email: ");
+        email = scan.nextLine();
+		System.out.println("Senha: ");
+		password = scan.nextLine();
     }
-
-    public static void atualizar() {
-        String matricula;
-        String nome;
-
-        System.out.print("Digite a matricula do aluno que deseja alterar: ");
-        matricula = scan.nextLine();
-        System.out.print("Digite o novo nome: ");
-        nome = scan.nextLine();
-
-        db.update(matricula, nome);
-    }
-
-    public static void deletar() {
-        String matricula;
-
-        System.out.print("Digite a matrícula que deseja excluir: ");
-        matricula = scan.nextLine();
-
-        db.delete(matricula);
+    
+    public static void buscar() {
+    	int escolha2;
+    	int escolhaBusca;
+    	
+    	do{
+	    	System.out.println("================================================================");
+	        System.out.println("                      PATOSHOP - BUSCA");
+	        System.out.println("================================================================");
+	        System.out.println("Como deseja buscar?: ");
+	        System.out.println("1- Por categoria");
+	        System.out.println("2- Por nome do produto");
+	        System.out.println("Buscar: ");
+	        escolhaBusca = scan.nextInt();
+	        
+	        if(escolhaBusca == 1) {
+	        	System.out.println("Escolha a categoria: ");
+		        System.out.println("41- %s");
+		        System.out.println("42- %s");
+		        System.out.println("43- %s");
+		        System.out.println("44- %s");
+		        System.out.println("88- Todas as categorias");
+		        System.out.println("Categoria: ");
+		        escolha2 = scan.nextInt();
+		        //mostrar produtos da categoria escolhida
+	        }
+	        
+	        if(escolhaBusca == 2) {
+	        	System.out.println("Nome do produto que está buscando: ");
+	        	escolha2 = scan.nextInt();
+	        	//mostrar produto com o nome 
+	        }
+    	} while(escolhaBusca == 1 || escolhaBusca == 2);
     }
 }
+
