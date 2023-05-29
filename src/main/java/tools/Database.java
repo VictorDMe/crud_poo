@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.*;
+import java.util.ArrayList;
 
 public class Database {
     private static final String DATABASE = "patoshop.db";
@@ -30,56 +31,75 @@ public class Database {
             }
 
             // =========== SQL INICIAL PARA CRIAÇÃO DAS TABELAS ===========
-            //TODO Alterar SQL para um que crie um schema de acordo com o feito pelo modelo
+
             Statement stmt = conn.createStatement();
 
-            String sql = "CREATE TABLE Clientes (\n" +
-                    "    ID_cliente INTEGER PRIMARY KEY,\n" +
+            String sql = "CREATE TABLE Usuarios (\n" +
+                    "    ID_usuario INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
+                    "    login TEXT,\n" +
+                    "    senha TEXT\n" +
+                    ");\n";
+
+            stmt.execute(sql);
+
+            sql = "CREATE TABLE Clientes (\n" +
+                    "    ID_cliente INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
+                    "    ID_usuario INTEGER,\n" +
                     "    Nome TEXT,\n" +
                     "    Endereco TEXT,\n" +
                     "    Telefone TEXT,\n" +
                     "    Email TEXT,\n" +
-                    "    Usuario TEXT,\n" +
-                    "    Senha TEXT\n" +
+                    "    FOREIGN KEY (ID_usuario) REFERENCES Usuarios(ID_usuario)\n" +
                     ");";
 
             stmt.execute(sql);
 
             sql = "CREATE TABLE Vendedor (\n" +
-                    "    ID_vendedor INTEGER PRIMARY KEY,\n" +
+                    "    ID_vendedor INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
+                    "    ID_usuario INTEGER,\n" +
                     "    Nome TEXT,\n" +
                     "    Endereco TEXT,\n" +
                     "    Telefone TEXT,\n" +
                     "    Email TEXT,\n" +
-                    "    Usuario TEXT,\n" +
-                    "    Senha TEXT\n" +
+                    "     FOREIGN KEY (ID_usuario) REFERENCES Usuarios(ID_usuario)\n" +
                     ");\n";
 
             stmt.execute(sql);
 
             sql = "CREATE TABLE Fabricante (\n" +
-                    "    ID_fabricante INTEGER PRIMARY KEY,\n" +
+                    "    ID_fabricante INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
+                    "    ID_usuario INTEGER,\n" +
                     "    Nome TEXT,\n" +
                     "    Endereco TEXT,\n" +
-                    "    Telefone TEXT\n" +
+                    "    Telefone TEXT,\n" +
+                    "    FOREIGN KEY (ID_usuario) REFERENCES Usuarios(ID_usuario)\n" +
                     ");\n";
 
 
             stmt.execute(sql);
 
+            sql = "CREATE TABLE Categorias (\n" +
+                    "    ID_categoria INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
+                    "    Nome TEXT\n" +
+                    ");\n";
+
+            stmt.execute(sql);
+
             sql = "CREATE TABLE Produtos (\n" +
-                    "    ID_produto INTEGER PRIMARY KEY,\n" +
+                    "    ID_produto INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
                     "    Nome TEXT,\n" +
                     "    Preco REAL,\n" +
                     "    ID_fabricante INTEGER,\n" +
-                    "    FOREIGN KEY (ID_fabricante) REFERENCES Fabricante(ID_fabricante)\n" +
+                    "    ID_categoria INTEGER,\n" +
+                    "    FOREIGN KEY (ID_fabricante) REFERENCES Fabricante(ID_fabricante),\n" +
+                    "    FOREIGN KEY (ID_categoria) REFERENCES Categorias(ID_categoria)\n" +
                     ");\n";
 
 
             stmt.execute(sql);
 
             sql = "CREATE TABLE Vendas (\n" +
-                    "    ID_venda INTEGER PRIMARY KEY,\n" +
+                    "    ID_venda INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
                     "    ID_cliente INTEGER,\n" +
                     "    ID_vendedor INTEGER,\n" +
                     "    ID_produto INTEGER,\n" +
@@ -93,7 +113,7 @@ public class Database {
             stmt.execute(sql);
 
             sql = "CREATE TABLE Admin (\n" +
-                    "    ID_admin INTEGER PRIMARY KEY,\n" +
+                    "    ID_admin INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
                     "    Nome TEXT,\n" +
                     "    Usuario TEXT,\n" +
                     "    Senha TEXT\n" +
@@ -227,4 +247,83 @@ public class Database {
             System.out.printf("Matrícula %s não existe.", matricula);
         }
     }
+    protected ArrayList<String> selectProdutosDestaque(){
+        ArrayList<String> arrayRetornavel = new ArrayList<>();
+        String sql = "SELECT Nome from Produtos limit 3";
+
+        try (Connection conn = this.connect();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                arrayRetornavel.add(rs.getString("Nome"));
+            }
+            for (int i = arrayRetornavel.size(); i<=3; i++){
+                arrayRetornavel.add("Vazio");
+            }
+
+        } catch (SQLException | ClassNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+     return arrayRetornavel;
+    }
+
+    protected ArrayList<String> selectVendedoresDestaque(){
+        ArrayList<String> arrayRetornavel = new ArrayList<>();
+        String sql = "SELECT Nome from Vendedor limit 3";
+
+        try (Connection conn = this.connect();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                arrayRetornavel.add(rs.getString("Nome"));
+            }
+
+            for (int i = arrayRetornavel.size(); i<=3; i++){
+                arrayRetornavel.add("Vazio");
+            }
+
+        } catch (SQLException | ClassNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+        return arrayRetornavel;
+    }
+
+    protected ArrayList<String> selectCategoriasDestaque(){
+        ArrayList<String> arrayRetornavel = new ArrayList<>();
+        String sql = "SELECT Nome from Categorias limit 3";
+
+        try (Connection conn = this.connect();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                arrayRetornavel.add(rs.getString("Nome"));
+            }
+            for (int i = arrayRetornavel.size(); i<=3; i++){
+                arrayRetornavel.add("Vazio");
+            }
+
+        } catch (SQLException | ClassNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+        return arrayRetornavel;
+    }
+
+    protected void registrarUsuario( String username, String password ){
+        String sql = "INSERT INTO Usuarios(login, senha) VALUES(?,?)";
+
+        try (Connection conn = this.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, username);
+            pstmt.setString(2, password);
+            pstmt.executeUpdate();
+
+        } catch (SQLException | ClassNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
 }

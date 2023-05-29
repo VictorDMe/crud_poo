@@ -20,8 +20,8 @@ public class Program {
 
             switch (menuOption) {
                 case 1 -> login();
-                case 2 -> buscar();
-                case 3 -> registro();
+                case 2 -> registro();
+                case 3 -> buscar();
             }
         }
     }
