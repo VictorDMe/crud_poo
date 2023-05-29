@@ -79,6 +79,9 @@ public class Crud {
         		case 2:
         			System.out.println("Usuario: ");
         			System.out.println("Senha: ");
+				case 3:
+
+				c
         	}
     	} while(escolha >= 1 && escolha <= 4);
     }
@@ -101,7 +104,8 @@ public class Crud {
     }
     
     public static void buscar() {
-    	int escolha2;
+    	String categoriaDigitada;
+		String produtoPesquisa;
     	int escolhaBusca;
     	
     	do{
@@ -111,25 +115,21 @@ public class Crud {
 	        System.out.println("Como deseja buscar?: ");
 	        System.out.println("1- Por categoria");
 	        System.out.println("2- Por nome do produto");
-	        System.out.println("Buscar: ");
+	        System.out.print("Buscar: ");
 	        escolhaBusca = scan.nextInt();
-	        
+			scan.nextLine();
+
 	        if(escolhaBusca == 1) {
-	        	System.out.println("Escolha a categoria: ");
-		        System.out.println("41- %s");
-		        System.out.println("42- %s");
-		        System.out.println("43- %s");
-		        System.out.println("44- %s");
-		        System.out.println("88- Todas as categorias");
-		        System.out.println("Categoria: ");
-		        escolha2 = scan.nextInt();
+		        System.out.print("Digite a categoria: ");
+		        categoriaDigitada = scan.nextLine();
+				db.selectProdutoCategoria(categoriaDigitada);
 		        //mostrar produtos da categoria escolhida
 	        }
 	        
 	        if(escolhaBusca == 2) {
-	        	System.out.println("Nome do produto que está buscando: ");
-	        	escolha2 = scan.nextInt();
-	        	//mostrar produto com o nome 
+	        	System.out.print("Nome do produto que está buscando: ");
+	        	produtoPesquisa = scan.nextLine();
+	        	db.selectProdutoPesquisa(produtoPesquisa);
 	        }
     	} while(escolhaBusca == 1 || escolhaBusca == 2);
     }

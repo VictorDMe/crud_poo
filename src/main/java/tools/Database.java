@@ -326,4 +326,56 @@ public class Database {
         }
     }
 
+    protected void selectProdutoCategoria(String categoria){
+        try {
+            String query = "SELECT \n" +
+                    "Produtos.Nome, Produtos.Preco\n" +
+                    "\n" +
+                    "FROM \n" +
+                    "Produtos \n" +
+                    "Inner Join Categorias\n" +
+                    "ON Categorias.ID_categoria = Produtos.ID_categoria\n" +
+                    "\n" +
+                    "WHERE\n" +
+                    "Categorias.Nome LIKE ?";
+            Connection conn = this.connect();
+            PreparedStatement pst = conn.prepareStatement(query);
+            pst.setString(1, categoria);
+
+            ResultSet rs = pst.executeQuery();
+
+            while (rs.next()) {
+                System.out.println(rs.getString("Nome") + "\t" +
+                        rs.getString("Preco"));
+            }
+
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+    protected void selectProdutoPesquisa(String produto){
+        try {
+            String query = "SELECT\n" +
+                    "Nome, Preco\n" +
+                    "\n" +
+                    "FROM\n" +
+                    "Produtos\n" +
+                    "\n" +
+                    "WHERE\n" +
+                    "Nome LIKE ? || '%'";
+            Connection conn = this.connect();
+            PreparedStatement pst = conn.prepareStatement(query);
+            pst.setString(1, produto);
+
+            ResultSet rs = pst.executeQuery();
+
+            while (rs.next()) {
+                System.out.println(rs.getString("Nome") + "\t" +
+                        rs.getString("Preco"));
+            }
+
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 }
