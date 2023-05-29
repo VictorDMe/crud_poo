@@ -62,6 +62,9 @@ public class Crud {
     }
     public static void login(){
     	int escolha;
+		String usuario;
+		String senha;
+
     	do {
     		System.out.println("================================================================");
 	        System.out.println("                      PATOSHOP - LOGIN");
@@ -74,15 +77,20 @@ public class Crud {
 	        
 	        System.out.print("Continuar como: ");
 	        escolha = scan.nextInt();
-	        
-        	switch(escolha) {
-        		case 2:
-        			System.out.println("Usuario: ");
-        			System.out.println("Senha: ");
-				case 3:
+			scan.nextLine();
+			System.out.print("Usuario: ");
+	        usuario = scan.nextLine();
+			System.out.print("Senha: ");
+			senha = scan.nextLine();
 
-				c
-        	}
+
+			if(db.login(usuario,senha)){
+				System.out.println("Logou");
+
+				//TODO Fazer Switch case para tipo de acesso
+			} else{
+				System.out.println("Erro no login");
+			}
     	} while(escolha >= 1 && escolha <= 4);
     }
     

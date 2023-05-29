@@ -378,4 +378,25 @@ public class Database {
             e.printStackTrace();
         }
     }
+
+    protected boolean login(String usuario, String senha) {
+        try {
+            String query = "SELECT (count(*) > 0) as found FROM Usuarios WHERE login LIKE ? AND senha like ?";
+            Connection conn = this.connect();
+            PreparedStatement pst = conn.prepareStatement(query);
+            pst.setString(1, usuario);
+            pst.setString(2, senha);
+
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getBoolean(1);
+                }
+            }
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+            return true;
+        }
+        return true;
+    }
+
 }
