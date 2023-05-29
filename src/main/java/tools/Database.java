@@ -29,14 +29,76 @@ public class Database {
                 System.out.println("Conexão com o banco estabelecida.");
             }
 
-        // =========== SQL INICIAL PARA CRIAÇÃO DAS TABELAS ===========
+            // =========== SQL INICIAL PARA CRIAÇÃO DAS TABELAS ===========
             //TODO Alterar SQL para um que crie um schema de acordo com o feito pelo modelo
-            String sql = "CREATE TABLE IF NOT EXISTS alunos (\n" +
-                    "matricula TEXT PRIMARY KEY NOT NULL," +
-                    "nome TEXT NOT NULL" +
-                    ")";
-
             Statement stmt = conn.createStatement();
+
+            String sql = "CREATE TABLE Clientes (\n" +
+                    "    ID_cliente INTEGER PRIMARY KEY,\n" +
+                    "    Nome TEXT,\n" +
+                    "    Endereco TEXT,\n" +
+                    "    Telefone TEXT,\n" +
+                    "    Email TEXT,\n" +
+                    "    Usuario TEXT,\n" +
+                    "    Senha TEXT\n" +
+                    ");";
+
+            stmt.execute(sql);
+
+            sql = "CREATE TABLE Vendedor (\n" +
+                    "    ID_vendedor INTEGER PRIMARY KEY,\n" +
+                    "    Nome TEXT,\n" +
+                    "    Endereco TEXT,\n" +
+                    "    Telefone TEXT,\n" +
+                    "    Email TEXT,\n" +
+                    "    Usuario TEXT,\n" +
+                    "    Senha TEXT\n" +
+                    ");\n";
+
+            stmt.execute(sql);
+
+            sql = "CREATE TABLE Fabricante (\n" +
+                    "    ID_fabricante INTEGER PRIMARY KEY,\n" +
+                    "    Nome TEXT,\n" +
+                    "    Endereco TEXT,\n" +
+                    "    Telefone TEXT\n" +
+                    ");\n";
+
+
+            stmt.execute(sql);
+
+            sql = "CREATE TABLE Produtos (\n" +
+                    "    ID_produto INTEGER PRIMARY KEY,\n" +
+                    "    Nome TEXT,\n" +
+                    "    Preco REAL,\n" +
+                    "    ID_fabricante INTEGER,\n" +
+                    "    FOREIGN KEY (ID_fabricante) REFERENCES Fabricante(ID_fabricante)\n" +
+                    ");\n";
+
+
+            stmt.execute(sql);
+
+            sql = "CREATE TABLE Vendas (\n" +
+                    "    ID_venda INTEGER PRIMARY KEY,\n" +
+                    "    ID_cliente INTEGER,\n" +
+                    "    ID_vendedor INTEGER,\n" +
+                    "    ID_produto INTEGER,\n" +
+                    "    Data TEXT,\n" +
+                    "    Valor_total REAL,\n" +
+                    "    FOREIGN KEY (ID_cliente) REFERENCES Clientes(ID_cliente),\n" +
+                    "    FOREIGN KEY (ID_vendedor) REFERENCES Vendedor(ID_vendedor),\n" +
+                    "    FOREIGN KEY (ID_produto) REFERENCES Produtos(ID_produto)\n" +
+                    ");\n";
+
+            stmt.execute(sql);
+
+            sql = "CREATE TABLE Admin (\n" +
+                    "    ID_admin INTEGER PRIMARY KEY,\n" +
+                    "    Nome TEXT,\n" +
+                    "    Usuario TEXT,\n" +
+                    "    Senha TEXT\n" +
+                    ");\n";
+
             stmt.execute(sql);
 
         } catch (SQLException e) {
