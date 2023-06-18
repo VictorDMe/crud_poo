@@ -11,5 +11,5 @@ CRUD escrita em Java para o projeto final da disciplina de Programação Orienta
 - [x] Lista 1
 - [x] Lista 2
 - [x] Lista 3
-- [ ] Lista 4
+- [x] Lista 4
 - [ ] Entrega final
