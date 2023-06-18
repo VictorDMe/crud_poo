@@ -1,11 +1,13 @@
 package application;
 
+import java.io.IOException;
+
 import static tools.Crud.*;
 import static tools.Database.createNewDatabase;
 
 public class Program {
-    public static void main(String[] args) {
-
+    public static void main(String[] args) throws InterruptedException {
+        String[] cls = new String[] {"cmd.exe", "/c", "cls"};
         int menuOption;
         createNewDatabase();
 
@@ -23,6 +25,8 @@ public class Program {
                 case 2 -> registro();
                 case 3 -> buscar();
             }
+            System.out.print("\033[H\033[2J");
+            System.out.flush();
         }
     }
 }

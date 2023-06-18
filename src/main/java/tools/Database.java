@@ -88,7 +88,7 @@ public class Database {
             stmt.execute(sql);
 
             sql = "INSERT INTO TiposUsuarios(Descricao) VALUES " +
-                  "('Cliente'), ('Anunciante'), ('Super Admin');";
+                    "('Cliente'), ('Anunciante'), ('Super Admin');";
 
             stmt.execute(sql);
 
@@ -218,7 +218,8 @@ public class Database {
             System.out.printf("Matrícula %s não existe.", matricula);
         }
     }
-    protected ArrayList<String> selectProdutosDestaque(){
+
+    protected ArrayList<String> selectProdutosDestaque() {
         ArrayList<String> arrayRetornavel = new ArrayList<>();
         String sql = "SELECT Nome from Produtos limit 3";
 
@@ -229,17 +230,17 @@ public class Database {
             while (rs.next()) {
                 arrayRetornavel.add(rs.getString("Nome"));
             }
-            for (int i = arrayRetornavel.size(); i<=3; i++){
+            for (int i = arrayRetornavel.size(); i <= 3; i++) {
                 arrayRetornavel.add("Vazio");
             }
 
         } catch (SQLException | ClassNotFoundException e) {
             System.out.println(e.getMessage());
         }
-     return arrayRetornavel;
+        return arrayRetornavel;
     }
 
-    protected ArrayList<String> selectVendedoresDestaque(){
+    protected ArrayList<String> selectVendedoresDestaque() {
         ArrayList<String> arrayRetornavel = new ArrayList<>();
         String sql = "SELECT Nome from Usuarios where TipoUsuario = 1 limit 3";
 
@@ -251,7 +252,7 @@ public class Database {
                 arrayRetornavel.add(rs.getString("Nome"));
             }
 
-            for (int i = arrayRetornavel.size(); i<=3; i++){
+            for (int i = arrayRetornavel.size(); i <= 3; i++) {
                 arrayRetornavel.add("Vazio");
             }
 
@@ -261,7 +262,7 @@ public class Database {
         return arrayRetornavel;
     }
 
-    protected ArrayList<String> selectCategoriasDestaque(){
+    protected ArrayList<String> selectCategoriasDestaque() {
         ArrayList<String> arrayRetornavel = new ArrayList<>();
         String sql = "SELECT Nome from Categorias limit 3";
 
@@ -272,7 +273,7 @@ public class Database {
             while (rs.next()) {
                 arrayRetornavel.add(rs.getString("Nome"));
             }
-            for (int i = arrayRetornavel.size(); i<=3; i++){
+            for (int i = arrayRetornavel.size(); i <= 3; i++) {
                 arrayRetornavel.add("Vazio");
             }
 
@@ -282,19 +283,25 @@ public class Database {
         return arrayRetornavel;
     }
 
-    protected void registrarUsuario(int tipoUsuario ,String username, String password, String nome, String endereco, String telefone, String email ){
-        String sql = "INSERT INTO Usuarios(login, senha) VALUES(?,?)";
+    protected void registrarUsuario(int tipoUsuario, String username,
+                                    String password, String nome,
+                                    String endereco, String telefone,
+                                    String email) {
+
+        String sql = "INSERT INTO " +
+                "Usuarios(TipoUsuario, login, senha, Nome, Endereco, Telefone, Email) " +
+                "VALUES(?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = this.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, username);
-            pstmt.setString(2, password);
+            pstmt.setInt(1, tipoUsuario);
+            pstmt.setString(2, username);
             pstmt.setString(3, password);
-            pstmt.setString(4, password);
-            pstmt.setString(5, password);
-            pstmt.setString(6, password);
-            pstmt.setString(7, password);
+            pstmt.setString(4, nome);
+            pstmt.setString(5, endereco);
+            pstmt.setString(6, telefone);
+            pstmt.setString(7, email);
 
             pstmt.executeUpdate();
 
@@ -303,7 +310,7 @@ public class Database {
         }
     }
 
-    protected void selectProdutoCategoria(String categoria){
+    protected void selectProdutoCategoria(String categoria) {
         try {
             String query = "SELECT \n" +
                     "Produtos.Nome, Produtos.Preco\n" +
@@ -330,7 +337,8 @@ public class Database {
             e.printStackTrace();
         }
     }
-    protected void selectProdutoPesquisa(String produto){
+
+    protected void selectProdutoPesquisa(String produto) {
         try {
             String query = "SELECT " +
                     "Nome, Preco " +
