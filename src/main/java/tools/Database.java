@@ -50,6 +50,7 @@ public class Database {
                     "    Endereco TEXT,\n" +
                     "    Telefone TEXT,\n" +
                     "    Email TEXT,\n" +
+                    "    UNIQUE(login), \n" +
                     "    FOREIGN KEY (TipoUsuario) REFERENCES TiposUsuarios(ID_Usuario)\n" +
                     ");\n";
 
@@ -84,6 +85,11 @@ public class Database {
                     "    FOREIGN KEY (ID_usuario) REFERENCES Usuarios(ID_usuario),\n" +
                     "    FOREIGN KEY (ID_produto) REFERENCES Produtos(ID_produto)\n" +
                     ");\n";
+
+            stmt.execute(sql);
+
+            sql = "INSERT INTO TiposUsuarios(Descricao) VALUES " +
+                    "('Cliente'), ('Anunciante'), ('Super Admin');";
 
             stmt.execute(sql);
 
@@ -213,7 +219,8 @@ public class Database {
             System.out.printf("Matrícula %s não existe.", matricula);
         }
     }
-    protected ArrayList<String> selectProdutosDestaque(){
+
+    protected ArrayList<String> selectProdutosDestaque() {
         ArrayList<String> arrayRetornavel = new ArrayList<>();
         String sql = "SELECT Nome from Produtos limit 3";
 
@@ -224,17 +231,17 @@ public class Database {
             while (rs.next()) {
                 arrayRetornavel.add(rs.getString("Nome"));
             }
-            for (int i = arrayRetornavel.size(); i<=3; i++){
+            for (int i = arrayRetornavel.size(); i <= 3; i++) {
                 arrayRetornavel.add("Vazio");
             }
 
         } catch (SQLException | ClassNotFoundException e) {
             System.out.println(e.getMessage());
         }
-     return arrayRetornavel;
+        return arrayRetornavel;
     }
 
-    protected ArrayList<String> selectVendedoresDestaque(){
+    protected ArrayList<String> selectVendedoresDestaque() {
         ArrayList<String> arrayRetornavel = new ArrayList<>();
         String sql = "SELECT Nome from Usuarios where TipoUsuario = 1 limit 3";
 
@@ -246,7 +253,7 @@ public class Database {
                 arrayRetornavel.add(rs.getString("Nome"));
             }
 
-            for (int i = arrayRetornavel.size(); i<=3; i++){
+            for (int i = arrayRetornavel.size(); i <= 3; i++) {
                 arrayRetornavel.add("Vazio");
             }
 
@@ -256,7 +263,7 @@ public class Database {
         return arrayRetornavel;
     }
 
-    protected ArrayList<String> selectCategoriasDestaque(){
+    protected ArrayList<String> selectCategoriasDestaque() {
         ArrayList<String> arrayRetornavel = new ArrayList<>();
         String sql = "SELECT Nome from Categorias limit 3";
 
@@ -267,7 +274,7 @@ public class Database {
             while (rs.next()) {
                 arrayRetornavel.add(rs.getString("Nome"));
             }
-            for (int i = arrayRetornavel.size(); i<=3; i++){
+            for (int i = arrayRetornavel.size(); i <= 3; i++) {
                 arrayRetornavel.add("Vazio");
             }
 
@@ -277,38 +284,15 @@ public class Database {
         return arrayRetornavel;
     }
 
-    protected void registrarUsuario(int tipoUsuario ,String username, String password, String nome, String endereco, String telefone, String email ){
-        String sql = "INSERT INTO Usuarios(login, senha) VALUES(?,?)";
-
-        try (Connection conn = this.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setString(1, username);
-            pstmt.setString(2, password);
-            pstmt.setString(3, password);
-            pstmt.setString(4, password);
-            pstmt.setString(5, password);
-            pstmt.setString(6, password);
-            pstmt.setString(7, password);
-
-            pstmt.executeUpdate();
-
-        } catch (SQLException | ClassNotFoundException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    protected void selectProdutoCategoria(String categoria){
+    protected void selectProdutoCategoria(String categoria) {
         try {
             String query = "SELECT \n" +
-                    "Produtos.Nome, Produtos.Preco\n" +
-                    "\n" +
-                    "FROM \n" +
-                    "Produtos \n" +
-                    "Inner Join Categorias\n" +
-                    "ON Categorias.ID_categoria = Produtos.ID_categoria\n" +
-                    "\n" +
-                    "WHERE\n" +
+                    "Produtos.Nome, Produtos.Preco " +
+                    "FROM " +
+                    "Produtos " +
+                    "Inner Join Categorias " +
+                    "ON Categorias.ID_categoria = Produtos.ID_categoria " +
+                    "WHERE " +
                     "Categorias.Nome LIKE ?";
             Connection conn = this.connect();
             PreparedStatement pst = conn.prepareStatement(query);
@@ -325,15 +309,13 @@ public class Database {
             e.printStackTrace();
         }
     }
-    protected void selectProdutoPesquisa(String produto){
+
+    protected void selectProdutoPesquisa(String produto) {
         try {
-            String query = "SELECT\n" +
-                    "Nome, Preco\n" +
-                    "\n" +
-                    "FROM\n" +
-                    "Produtos\n" +
-                    "\n" +
-                    "WHERE\n" +
+            String query = "SELECT " +
+                    "Nome, Preco " +
+                    "FROM Produtos " +
+                    "WHERE " +
                     "Nome LIKE ? || '%'";
             Connection conn = this.connect();
             PreparedStatement pst = conn.prepareStatement(query);
@@ -351,24 +333,55 @@ public class Database {
         }
     }
 
-    protected boolean login(String usuario, String senha) {
+    protected void registrarUsuario(int tipoUsuario, String username,
+                                    String password, String nome,
+                                    String endereco, String telefone,
+                                    String email) {
+
+        String sql = "INSERT INTO " +
+                "Usuarios(TipoUsuario, login, senha, Nome, Endereco, Telefone, Email) " +
+                "VALUES(?, ?, ?, ?, ?, ?, ?)";
+
+        try (Connection conn = this.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, tipoUsuario);
+            pstmt.setString(2, username);
+            pstmt.setString(3, password);
+            pstmt.setString(4, nome);
+            pstmt.setString(5, endereco);
+            pstmt.setString(6, telefone);
+            pstmt.setString(7, email);
+
+            pstmt.executeUpdate();
+            System.out.println("CADASTRADO COM SUCESSO");
+
+        } catch (SQLException | ClassNotFoundException e) {
+            System.out.println("CADASTRO INVALIDO, LOGIN JA EXISTE.");
+        }
+    }
+
+    protected boolean login(String usuario, String senha, int tipo_usuario) {
         try {
-            String query = "SELECT (count(*) > 0) as found FROM Usuarios WHERE login LIKE ? AND senha like ?";
+            String query = "SELECT (count(*) > 0) as found FROM Usuarios " +
+                    "WHERE " +
+                    "login LIKE ? AND " +
+                    "senha LIKE ? AND " +
+                    "TipoUsuario = ?";
             Connection conn = this.connect();
             PreparedStatement pst = conn.prepareStatement(query);
             pst.setString(1, usuario);
             pst.setString(2, senha);
+            pst.setInt(3, tipo_usuario);
 
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
-                    return rs.getBoolean(1);
+                    return (rs.getBoolean(1));
                 }
             }
         } catch (SQLException | ClassNotFoundException e) {
-            e.printStackTrace();
-            return true;
+            return false;
         }
-        return true;
+        return false;
     }
-
 }
