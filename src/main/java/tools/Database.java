@@ -50,6 +50,7 @@ public class Database {
                     "    Endereco TEXT,\n" +
                     "    Telefone TEXT,\n" +
                     "    Email TEXT,\n" +
+                    "    UNIQUE(login), \n" +
                     "    FOREIGN KEY (TipoUsuario) REFERENCES TiposUsuarios(ID_Usuario)\n" +
                     ");\n";
 
@@ -283,44 +284,15 @@ public class Database {
         return arrayRetornavel;
     }
 
-    protected void registrarUsuario(int tipoUsuario, String username,
-                                    String password, String nome,
-                                    String endereco, String telefone,
-                                    String email) {
-
-        String sql = "INSERT INTO " +
-                "Usuarios(TipoUsuario, login, senha, Nome, Endereco, Telefone, Email) " +
-                "VALUES(?, ?, ?, ?, ?, ?, ?)";
-
-        try (Connection conn = this.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setInt(1, tipoUsuario);
-            pstmt.setString(2, username);
-            pstmt.setString(3, password);
-            pstmt.setString(4, nome);
-            pstmt.setString(5, endereco);
-            pstmt.setString(6, telefone);
-            pstmt.setString(7, email);
-
-            pstmt.executeUpdate();
-
-        } catch (SQLException | ClassNotFoundException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
     protected void selectProdutoCategoria(String categoria) {
         try {
             String query = "SELECT \n" +
-                    "Produtos.Nome, Produtos.Preco\n" +
-                    "\n" +
-                    "FROM \n" +
-                    "Produtos \n" +
-                    "Inner Join Categorias\n" +
-                    "ON Categorias.ID_categoria = Produtos.ID_categoria\n" +
-                    "\n" +
-                    "WHERE\n" +
+                    "Produtos.Nome, Produtos.Preco " +
+                    "FROM " +
+                    "Produtos " +
+                    "Inner Join Categorias " +
+                    "ON Categorias.ID_categoria = Produtos.ID_categoria " +
+                    "WHERE " +
                     "Categorias.Nome LIKE ?";
             Connection conn = this.connect();
             PreparedStatement pst = conn.prepareStatement(query);
@@ -361,12 +333,40 @@ public class Database {
         }
     }
 
+    protected void registrarUsuario(int tipoUsuario, String username,
+                                    String password, String nome,
+                                    String endereco, String telefone,
+                                    String email) {
+
+        String sql = "INSERT INTO " +
+                "Usuarios(TipoUsuario, login, senha, Nome, Endereco, Telefone, Email) " +
+                "VALUES(?, ?, ?, ?, ?, ?, ?)";
+
+        try (Connection conn = this.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, tipoUsuario);
+            pstmt.setString(2, username);
+            pstmt.setString(3, password);
+            pstmt.setString(4, nome);
+            pstmt.setString(5, endereco);
+            pstmt.setString(6, telefone);
+            pstmt.setString(7, email);
+
+            pstmt.executeUpdate();
+            System.out.println("CADASTRADO COM SUCESSO");
+
+        } catch (SQLException | ClassNotFoundException e) {
+            System.out.println("CADASTRO INVALIDO, LOGIN JA EXISTE.");
+        }
+    }
+
     protected boolean login(String usuario, String senha, int tipo_usuario) {
         try {
             String query = "SELECT (count(*) > 0) as found FROM Usuarios " +
                     "WHERE " +
                     "login LIKE ? AND " +
-                    "senha like ? AND " +
+                    "senha LIKE ? AND " +
                     "TipoUsuario = ?";
             Connection conn = this.connect();
             PreparedStatement pst = conn.prepareStatement(query);
@@ -375,12 +375,13 @@ public class Database {
             pst.setInt(3, tipo_usuario);
 
             try (ResultSet rs = pst.executeQuery()) {
-                if (rs.next()) return rs.getBoolean(1);
+                if (rs.next()) {
+                    return (rs.getBoolean(1));
+                }
             }
         } catch (SQLException | ClassNotFoundException e) {
-            e.printStackTrace();
-            return true;
+            return false;
         }
-        return true;
+        return false;
     }
 }

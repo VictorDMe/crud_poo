@@ -73,7 +73,7 @@ public class Crud {
             System.out.println("1 - Cliente");
             System.out.println("2 - Anunciante");
             System.out.println("3 - Super Admin");
-            System.out.println("4  - Acesso publico");
+            System.out.println("4 - Acesso publico");
 
             System.out.print("Continuar como: ");
             tipo_usuario = scan.nextInt();
@@ -81,9 +81,9 @@ public class Crud {
         } while (tipo_usuario < 1 || tipo_usuario > 4);
 
         if (tipo_usuario < 4) {
-            System.out.print("Usuario: ");
-            usuario = scan.nextLine();
+            System.out.print("\nUsuario: ");
             scan.nextLine();
+            usuario = scan.nextLine();
 
             System.out.print("Senha: ");
             senha = scan.nextLine();
@@ -100,7 +100,7 @@ public class Crud {
                         TIPOUSUARIO = "Super Admin";
                         break;
                 }
-            } else System.out.println("Login inválido.");
+            } else System.out.println(cor.vermelho("Login inválido."));
         } else TIPOUSUARIO = "Acesso Publico";
     }
 
@@ -117,37 +117,40 @@ public class Crud {
             System.out.print("Tipo de Usuario: \n" +
                     "1 - Cliente \n" +
                     "2 - Anunciante \n" +
+                    "3 - Sair \n" +
                     "Digite sua opcao: ");
             tipoUsuario = scan.nextInt();
 
-            if (tipoUsuario < 1 || tipoUsuario > 2)
+            if (tipoUsuario < 1 || tipoUsuario > 3)
                 System.out.println("Opcao invalida, tente novamente. \n");
-        } while (tipoUsuario < 1 || tipoUsuario > 2);
 
-        System.out.print("Usuario: ");
-        username = scan.nextLine();
-        scan.nextLine();
+        } while (tipoUsuario < 1 || tipoUsuario > 3);
 
-        System.out.print("Senha: ");
-        password = scan.nextLine();
+        if (tipoUsuario != 3) {
+            scan.nextLine();
+            System.out.print("Usuario: ");
+            username = scan.nextLine();
 
-        System.out.print("Nome: ");
-        nome = scan.nextLine();
+            System.out.print("Senha: ");
+            password = scan.nextLine();
 
-        System.out.print("Endereco: ");
-        endereco = scan.nextLine();
+            System.out.print("Nome: ");
+            nome = scan.nextLine();
 
-        System.out.print("Telefone: ");
-        telefone = scan.nextLine();
+            System.out.print("Endereco: ");
+            endereco = scan.nextLine();
 
-        System.out.print("Email: ");
-        email = scan.nextLine();
+            System.out.print("Telefone: ");
+            telefone = scan.nextLine();
 
-        System.out.println("CADASTRADO COM SUCESSO");
-        Thread.sleep(2000);
+            System.out.print("Email: ");
+            email = scan.nextLine();
 
-        db.registrarUsuario(tipoUsuario, username, password,
-                nome, endereco, telefone, email);
+            Thread.sleep(2000);
+
+            db.registrarUsuario(tipoUsuario, username, password,
+                    nome, endereco, telefone, email);
+        }
     }
 
     public static void buscar() {
