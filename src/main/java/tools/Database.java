@@ -87,6 +87,11 @@ public class Database {
 
             stmt.execute(sql);
 
+            sql = "INSERT INTO TiposUsuarios(Descricao) VALUES " +
+                  "('Cliente'), ('Anunciante'), ('Super Admin');";
+
+            stmt.execute(sql);
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -327,13 +332,10 @@ public class Database {
     }
     protected void selectProdutoPesquisa(String produto){
         try {
-            String query = "SELECT\n" +
-                    "Nome, Preco\n" +
-                    "\n" +
-                    "FROM\n" +
-                    "Produtos\n" +
-                    "\n" +
-                    "WHERE\n" +
+            String query = "SELECT " +
+                    "Nome, Preco " +
+                    "FROM Produtos " +
+                    "WHERE " +
                     "Nome LIKE ? || '%'";
             Connection conn = this.connect();
             PreparedStatement pst = conn.prepareStatement(query);
@@ -351,18 +353,21 @@ public class Database {
         }
     }
 
-    protected boolean login(String usuario, String senha) {
+    protected boolean login(String usuario, String senha, int tipo_usuario) {
         try {
-            String query = "SELECT (count(*) > 0) as found FROM Usuarios WHERE login LIKE ? AND senha like ?";
+            String query = "SELECT (count(*) > 0) as found FROM Usuarios " +
+                    "WHERE " +
+                    "login LIKE ? AND " +
+                    "senha like ? AND " +
+                    "TipoUsuario = ?";
             Connection conn = this.connect();
             PreparedStatement pst = conn.prepareStatement(query);
             pst.setString(1, usuario);
             pst.setString(2, senha);
+            pst.setInt(3, tipo_usuario);
 
             try (ResultSet rs = pst.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getBoolean(1);
-                }
+                if (rs.next()) return rs.getBoolean(1);
             }
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
@@ -370,5 +375,4 @@ public class Database {
         }
         return true;
     }
-
 }
