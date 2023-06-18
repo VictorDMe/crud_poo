@@ -25,7 +25,7 @@ public class Crud {
         System.out.println("================================================================");
         System.out.printf("                      PATOSHOP - HOME - %s\n", TIPOUSUARIO);
         System.out.println("================================================================");
-        System.out.println("              1- Login  2- Registro 3- Buscar  99 - Sair ");
+        System.out.println("              1- Login  2- Registro 3- Buscar 4 - Compra 99 - Sair ");
         System.out.println("----------------------------------------------------------------");
         System.out.println("3- Buscar produtos");
         System.out.println("----------------------------------------------------------------");
@@ -182,5 +182,6 @@ public class Crud {
             }
         } while (escolhaBusca == 1 || escolhaBusca == 2);
     }
+    
 }
 

@@ -81,7 +81,6 @@ public class Database {
                     "    ID_usuario INTEGER,\n" +
                     "    ID_produto INTEGER,\n" +
                     "    Data TEXT,\n" +
-                    "    Valor_total REAL,\n" +
                     "    FOREIGN KEY (ID_usuario) REFERENCES Usuarios(ID_usuario),\n" +
                     "    FOREIGN KEY (ID_produto) REFERENCES Produtos(ID_produto)\n" +
                     ");\n";
@@ -243,7 +242,7 @@ public class Database {
 
     protected ArrayList<String> selectVendedoresDestaque() {
         ArrayList<String> arrayRetornavel = new ArrayList<>();
-        String sql = "SELECT Nome from Usuarios where TipoUsuario = 1 limit 3";
+        String sql = "SELECT Nome from Usuarios where TipoUsuario = 2 limit 3";
 
         try (Connection conn = this.connect();
              Statement stmt = conn.createStatement();
