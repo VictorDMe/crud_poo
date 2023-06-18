@@ -34,47 +34,24 @@ public class Database {
 
             Statement stmt = conn.createStatement();
 
-            String sql = "CREATE TABLE Usuarios (\n" +
+            String sql = "CREATE TABLE TiposUsuarios (\n" +
+                    "    ID_Usuario INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
+                    "    Descricao TEXT\n" +
+                    ");\n";
+
+            stmt.execute(sql);
+
+            sql = "CREATE TABLE Usuarios (\n" +
                     "    ID_usuario INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
+                    "    TipoUsuario INTEGER,\n" +
                     "    login TEXT,\n" +
-                    "    senha TEXT\n" +
-                    ");\n";
-
-            stmt.execute(sql);
-
-            sql = "CREATE TABLE Clientes (\n" +
-                    "    ID_cliente INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
-                    "    ID_usuario INTEGER,\n" +
+                    "    senha TEXT,\n" +
                     "    Nome TEXT,\n" +
                     "    Endereco TEXT,\n" +
                     "    Telefone TEXT,\n" +
                     "    Email TEXT,\n" +
-                    "    FOREIGN KEY (ID_usuario) REFERENCES Usuarios(ID_usuario)\n" +
-                    ");";
-
-            stmt.execute(sql);
-
-            sql = "CREATE TABLE Vendedor (\n" +
-                    "    ID_vendedor INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
-                    "    ID_usuario INTEGER,\n" +
-                    "    Nome TEXT,\n" +
-                    "    Endereco TEXT,\n" +
-                    "    Telefone TEXT,\n" +
-                    "    Email TEXT,\n" +
-                    "     FOREIGN KEY (ID_usuario) REFERENCES Usuarios(ID_usuario)\n" +
+                    "    FOREIGN KEY (TipoUsuario) REFERENCES TiposUsuarios(ID_Usuario)\n" +
                     ");\n";
-
-            stmt.execute(sql);
-
-            sql = "CREATE TABLE Fabricante (\n" +
-                    "    ID_fabricante INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
-                    "    ID_usuario INTEGER,\n" +
-                    "    Nome TEXT,\n" +
-                    "    Endereco TEXT,\n" +
-                    "    Telefone TEXT,\n" +
-                    "    FOREIGN KEY (ID_usuario) REFERENCES Usuarios(ID_usuario)\n" +
-                    ");\n";
-
 
             stmt.execute(sql);
 
@@ -89,9 +66,9 @@ public class Database {
                     "    ID_produto INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
                     "    Nome TEXT,\n" +
                     "    Preco REAL,\n" +
-                    "    ID_fabricante INTEGER,\n" +
+                    "    ID_usuario INTEGER,\n" +
                     "    ID_categoria INTEGER,\n" +
-                    "    FOREIGN KEY (ID_fabricante) REFERENCES Fabricante(ID_fabricante),\n" +
+                    "    FOREIGN KEY (ID_usuario) REFERENCES Usuarios(ID_usuario),\n" +
                     "    FOREIGN KEY (ID_categoria) REFERENCES Categorias(ID_categoria)\n" +
                     ");\n";
 
@@ -100,23 +77,12 @@ public class Database {
 
             sql = "CREATE TABLE Vendas (\n" +
                     "    ID_venda INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
-                    "    ID_cliente INTEGER,\n" +
-                    "    ID_vendedor INTEGER,\n" +
+                    "    ID_usuario INTEGER,\n" +
                     "    ID_produto INTEGER,\n" +
                     "    Data TEXT,\n" +
                     "    Valor_total REAL,\n" +
-                    "    FOREIGN KEY (ID_cliente) REFERENCES Clientes(ID_cliente),\n" +
-                    "    FOREIGN KEY (ID_vendedor) REFERENCES Vendedor(ID_vendedor),\n" +
+                    "    FOREIGN KEY (ID_usuario) REFERENCES Usuarios(ID_usuario),\n" +
                     "    FOREIGN KEY (ID_produto) REFERENCES Produtos(ID_produto)\n" +
-                    ");\n";
-
-            stmt.execute(sql);
-
-            sql = "CREATE TABLE Admin (\n" +
-                    "    ID_admin INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
-                    "    Nome TEXT,\n" +
-                    "    Usuario TEXT,\n" +
-                    "    Senha TEXT\n" +
                     ");\n";
 
             stmt.execute(sql);
@@ -270,7 +236,7 @@ public class Database {
 
     protected ArrayList<String> selectVendedoresDestaque(){
         ArrayList<String> arrayRetornavel = new ArrayList<>();
-        String sql = "SELECT Nome from Vendedor limit 3";
+        String sql = "SELECT Nome from Usuarios where TipoUsuario = 1 limit 3";
 
         try (Connection conn = this.connect();
              Statement stmt = conn.createStatement();
@@ -311,7 +277,7 @@ public class Database {
         return arrayRetornavel;
     }
 
-    protected void registrarUsuario( String username, String password ){
+    protected void registrarUsuario(int tipoUsuario ,String username, String password, String nome, String endereco, String telefone, String email ){
         String sql = "INSERT INTO Usuarios(login, senha) VALUES(?,?)";
 
         try (Connection conn = this.connect();
@@ -319,6 +285,12 @@ public class Database {
 
             pstmt.setString(1, username);
             pstmt.setString(2, password);
+            pstmt.setString(3, password);
+            pstmt.setString(4, password);
+            pstmt.setString(5, password);
+            pstmt.setString(6, password);
+            pstmt.setString(7, password);
+
             pstmt.executeUpdate();
 
         } catch (SQLException | ClassNotFoundException e) {

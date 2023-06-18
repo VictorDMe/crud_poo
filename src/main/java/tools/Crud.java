@@ -1,7 +1,5 @@
 package tools;
 
-import entities.Aluno;
-
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -72,7 +70,7 @@ public class Crud {
 	        System.out.println("Escolha o perfil de acesso: ");
 	        System.out.println("1- Acesso publico");
 	        System.out.println("2- Anunciante");
-	        System.out.println("3- Comprador");
+	        System.out.println("3- Cliente");
 	        System.out.println("4- Super Admin");
 	        
 	        System.out.print("Continuar como: ");
@@ -83,32 +81,68 @@ public class Crud {
 			System.out.print("Senha: ");
 			senha = scan.nextLine();
 
+			if (escolha == 1 ) break;
+
+			switch (escolha){
+
+				case 2:
+					//if ()
+					//db.login()
+				case 3:
+
+				case 4:
+
+			}
 
 			if(db.login(usuario,senha)){
 				System.out.println("Logou");
-
 				//TODO Fazer Switch case para tipo de acesso
 			} else{
 				System.out.println("Erro no login");
 			}
+			break;
     	} while(escolha >= 1 && escolha <= 4);
     }
     
     public static void registro() {
-    	String username;
-    	String password;
+		int tipoUsuario = 0, escolha = 0;
+    	String username, password, nome, endereco, telefone, email;
     	
     	
     	System.out.println("================================================================");
         System.out.println("                      PATOSHOP - REGISTRAR-SE");
         System.out.println("================================================================");
         scan.nextLine();
+
+		do{
+			System.out.print("Tipo de Usuario: \n" +
+					"1-Anunciante \n" +
+					"2-Comprador \n" +
+					"3-Super Admin \n" +
+					"Escolha sua opcao: ");
+			tipoUsuario = scan.nextInt();
+		}while (tipoUsuario < 1 || tipoUsuario > 3);
+
 		System.out.print("Usuario: ");
         username = scan.nextLine();
+
 		System.out.print("Senha: ");
 		password = scan.nextLine();
 
-		db.registrarUsuario(username, password);
+		System.out.print("Nome: ");
+		nome = scan.nextLine();
+
+		System.out.print("Senha: ");
+		endereco = scan.nextLine();
+
+		System.out.print("Usuario: ");
+		telefone = scan.nextLine();
+
+		System.out.print("Senha: ");
+		email = scan.nextLine();
+
+
+		db.registrarUsuario(tipoUsuario, username, password, nome, endereco, telefone, email);
     }
     
     public static void buscar() {
