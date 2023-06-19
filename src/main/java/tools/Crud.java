@@ -231,12 +231,9 @@ public class Crud {
                     db.compra(idProduto);
                     System.out.println(cor.verde("Compra efetuada com sucesso."));
                 }
-
-                else {
-                    System.out.println(cor.vermelho("Voce nao esta logado como cliente."));
-                }
             }
-        }
+        } else System.out.println(cor.vermelho("Voce nao esta logado como cliente."));
+
         Thread.sleep(3000);
     }
 
@@ -291,6 +288,6 @@ public class Crud {
             scan.nextLine();
 
         Thread.sleep(3000);
-        }
+        } else System.out.println(cor.vermelho("Voce nao esta logado como Anunciante."));
     }
 }
