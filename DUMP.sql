@@ -25,4 +25,3 @@ INSERT INTO Vendas(ID_usuario, ID_produto, Data) values
 (1,2,'20/10/2023'),
 (6,3,'21/10/2023'),
 (6,4,'21/10/2023');
-
