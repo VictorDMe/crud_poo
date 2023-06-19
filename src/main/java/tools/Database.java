@@ -5,6 +5,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.*;
 import java.util.ArrayList;
+import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
+
 
 public class Database {
     private static final String DATABASE = "patoshop.db";
@@ -73,7 +76,6 @@ public class Database {
                     "    FOREIGN KEY (ID_categoria) REFERENCES Categorias(ID_categoria)\n" +
                     ");\n";
 
-
             stmt.execute(sql);
 
             sql = "CREATE TABLE Vendas (\n" +
@@ -87,6 +89,7 @@ public class Database {
 
             stmt.execute(sql);
 
+            // =========== INSERT INICIAL PADRAO ===========
             sql = "INSERT INTO TiposUsuarios(Descricao) VALUES " +
                     "('Cliente'), ('Anunciante'), ('Super Admin');";
 
@@ -109,115 +112,6 @@ public class Database {
         return conn;
     }
 
-    protected boolean checkIsExist(String matricula) {
-        try {
-            String query = "SELECT (count(*) > 0) as found FROM alunos WHERE matricula LIKE ?";
-            Connection conn = this.connect();
-            PreparedStatement pst = conn.prepareStatement(query);
-            pst.setString(1, matricula);
-
-            try (ResultSet rs = pst.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getBoolean(1);
-                }
-            }
-        } catch (SQLException | ClassNotFoundException e) {
-            e.printStackTrace();
-            return true;
-        }
-        return true;
-    }
-
-    protected void insert(String nome, String matricula) {
-        String sql = "INSERT INTO alunos(nome, matricula) VALUES(?,?)";
-
-        try (Connection conn = this.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setString(1, nome);
-            pstmt.setString(2, matricula);
-            pstmt.executeUpdate();
-
-        } catch (SQLException | ClassNotFoundException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    protected void selectAll() throws ClassNotFoundException {
-        String sql = "SELECT matricula, nome FROM alunos";
-
-        try (Connection conn = this.connect();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-
-            System.out.print("\u001B[32m");
-            while (rs.next()) {
-                System.out.println(rs.getString("matricula") + "\t" +
-                        rs.getString("nome"));
-            }
-            System.out.print("\u001B[0m");
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    protected void selectWithFilter(String matricula) {
-        try {
-            String query = "SELECT matricula, nome FROM alunos WHERE matricula LIKE ?";
-            Connection conn = this.connect();
-            PreparedStatement pst = conn.prepareStatement(query);
-            pst.setString(1, matricula);
-
-            ResultSet rs = pst.executeQuery();
-
-            while (rs.next()) {
-                System.out.println(rs.getString("matricula") + "\t" +
-                        rs.getString("nome"));
-            }
-
-        } catch (SQLException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
-    protected void update(String matricula, String nome) {
-        if (this.checkIsExist(matricula)) {
-            try {
-                String query = "UPDATE alunos SET nome = ? WHERE matricula = ?";
-                Connection conn = this.connect();
-                PreparedStatement pst = conn.prepareStatement(query);
-                pst.setString(1, nome);
-                pst.setString(2, matricula);
-
-                pst.executeUpdate();
-
-                System.out.printf("Matricula %s atualizada. \n", matricula);
-            } catch (SQLException | ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-        } else {
-            System.out.println("Matrícula não encontrada.");
-        }
-    }
-
-    protected void delete(String matricula) {
-        if (this.checkIsExist(matricula)) {
-            try {
-                String sql = "DELETE FROM alunos WHERE matricula = ?";
-                Connection conn = this.connect();
-                PreparedStatement pst = conn.prepareStatement(sql);
-                pst.setString(1, matricula);
-
-                pst.executeUpdate();
-
-                System.out.printf("Matrícula %s deletada do banco. \n", matricula);
-            } catch (SQLException | ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-        } else {
-            System.out.printf("Matrícula %s não existe.", matricula);
-        }
-    }
 
     protected ArrayList<String> selectProdutosDestaque() {
         ArrayList<String> arrayRetornavel = new ArrayList<>();
@@ -284,7 +178,7 @@ public class Database {
     }
 
     protected void selectProdutoCategoria(String categoria) {
-        try {
+        try (Connection conn = this.connect();){
             String query = "SELECT \n" +
                     "Produtos.Nome, Produtos.Preco " +
                     "FROM " +
@@ -293,7 +187,7 @@ public class Database {
                     "ON Categorias.ID_categoria = Produtos.ID_categoria " +
                     "WHERE " +
                     "Categorias.Nome LIKE ?";
-            Connection conn = this.connect();
+
             PreparedStatement pst = conn.prepareStatement(query);
             pst.setString(1, categoria);
 
@@ -310,20 +204,21 @@ public class Database {
     }
 
     protected void selectProdutoPesquisa(String produto) {
-        try {
+        try (Connection conn = this.connect();){
             String query = "SELECT " +
-                    "Nome, Preco " +
+                    "ID_produto, Nome, Preco " +
                     "FROM Produtos " +
                     "WHERE " +
                     "Nome LIKE ? || '%'";
-            Connection conn = this.connect();
+
             PreparedStatement pst = conn.prepareStatement(query);
             pst.setString(1, produto);
 
             ResultSet rs = pst.executeQuery();
 
             while (rs.next()) {
-                System.out.println(rs.getString("Nome") + "\t" +
+                System.out.printf("\nID: %s; \nNome: %s; \nPreco: \n%s;\n",
+                        rs.getString("ID_produto"), rs.getString("Nome"),
                         rs.getString("Preco"));
             }
 
@@ -361,13 +256,14 @@ public class Database {
     }
 
     protected boolean login(String usuario, String senha, int tipo_usuario) {
-        try {
+        try( Connection conn = this.connect();) {
             String query = "SELECT (count(*) > 0) as found FROM Usuarios " +
                     "WHERE " +
                     "login LIKE ? AND " +
                     "senha LIKE ? AND " +
                     "TipoUsuario = ?";
-            Connection conn = this.connect();
+
+
             PreparedStatement pst = conn.prepareStatement(query);
             pst.setString(1, usuario);
             pst.setString(2, senha);
@@ -382,5 +278,53 @@ public class Database {
             return false;
         }
         return false;
+    }
+
+    protected void compra(int ID_produto) {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        LocalDateTime now = LocalDateTime.now();
+        String dataHoraAtual = dtf.format(now);
+        int ID_usuario = idUsuario();
+
+        if (ID_usuario != 0) {
+
+            String sql = "INSERT INTO " +
+                    "Vendas(ID_usuario, ID_produto, Data) " +
+                    "VALUES(?, ?, ?)";
+
+            try (Connection conn = this.connect();
+                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+                pstmt.setInt(1, ID_usuario);
+                pstmt.setInt(2, ID_produto);
+                pstmt.setString(3, dataHoraAtual);
+
+                pstmt.executeUpdate();
+
+            } catch (SQLException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    protected int idUsuario() {
+        try (Connection conn = this.connect();){
+            String query = "SELECT " +
+                    "ID_usuario " +
+                    "FROM Usuarios " +
+                    "WHERE " +
+                    "login LIKE ?";
+
+            PreparedStatement pst = conn.prepareStatement(query);
+            pst.setString(1, Crud.USUARIO);
+            ResultSet rs = pst.executeQuery();
+
+            while (rs.next()) {
+                return rs.getInt("ID_usuario");
+            }
+
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 }

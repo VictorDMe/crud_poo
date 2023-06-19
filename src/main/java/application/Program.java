@@ -24,6 +24,7 @@ public class Program {
                 case 1 -> login();
                 case 2 -> registro();
                 case 3 -> buscar();
+                case 4 -> comprar();
             }
             System.out.print("\033[H\033[2J");
             System.out.flush();
