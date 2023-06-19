@@ -34,58 +34,67 @@ public class Database {
             }
 
             // =========== SQL INICIAL PARA CRIAÇÃO DAS TABELAS ===========
-
             Statement stmt = conn.createStatement();
 
-            String sql = "CREATE TABLE TiposUsuarios (\n" +
-                    "    ID_Usuario INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
-                    "    Descricao TEXT\n" +
-                    ");\n";
+            String sql = """
+                    CREATE TABLE TiposUsuarios (
+                        ID_Usuario INTEGER PRIMARY KEY AUTOINCREMENT,
+                        Descricao TEXT
+                    );
+                    """;
 
             stmt.execute(sql);
 
-            sql = "CREATE TABLE Usuarios (\n" +
-                    "    ID_usuario INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
-                    "    TipoUsuario INTEGER,\n" +
-                    "    login TEXT,\n" +
-                    "    senha TEXT,\n" +
-                    "    Nome TEXT,\n" +
-                    "    Endereco TEXT,\n" +
-                    "    Telefone TEXT,\n" +
-                    "    Email TEXT,\n" +
-                    "    UNIQUE(login), \n" +
-                    "    FOREIGN KEY (TipoUsuario) REFERENCES TiposUsuarios(ID_Usuario)\n" +
-                    ");\n";
+            sql = """
+                    CREATE TABLE Usuarios (
+                        ID_usuario INTEGER PRIMARY KEY AUTOINCREMENT,
+                        TipoUsuario INTEGER,
+                        login TEXT,
+                        senha TEXT,
+                        Nome TEXT,
+                        Endereco TEXT,
+                        Telefone TEXT,
+                        Email TEXT,
+                        UNIQUE(login),\s
+                        FOREIGN KEY (TipoUsuario) REFERENCES TiposUsuarios(ID_Usuario)
+                    );
+                    """;
 
             stmt.execute(sql);
 
-            sql = "CREATE TABLE Categorias (\n" +
-                    "    ID_categoria INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
-                    "    Nome TEXT\n" +
-                    ");\n";
+            sql = """
+                    CREATE TABLE Categorias (
+                        ID_categoria INTEGER PRIMARY KEY AUTOINCREMENT,
+                        Nome TEXT
+                    );
+                    """;
 
             stmt.execute(sql);
 
-            sql = "CREATE TABLE Produtos (\n" +
-                    "    ID_produto INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
-                    "    Nome TEXT,\n" +
-                    "    Preco REAL,\n" +
-                    "    ID_usuario INTEGER,\n" +
-                    "    ID_categoria INTEGER,\n" +
-                    "    FOREIGN KEY (ID_usuario) REFERENCES Usuarios(ID_usuario),\n" +
-                    "    FOREIGN KEY (ID_categoria) REFERENCES Categorias(ID_categoria)\n" +
-                    ");\n";
+            sql = """
+                    CREATE TABLE Produtos (
+                        ID_produto INTEGER PRIMARY KEY AUTOINCREMENT,
+                        Nome TEXT,
+                        Preco REAL,
+                        ID_usuario INTEGER,
+                        ID_categoria INTEGER,
+                        FOREIGN KEY (ID_usuario) REFERENCES Usuarios(ID_usuario),
+                        FOREIGN KEY (ID_categoria) REFERENCES Categorias(ID_categoria)
+                    );
+                    """;
 
             stmt.execute(sql);
 
-            sql = "CREATE TABLE Vendas (\n" +
-                    "    ID_venda INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
-                    "    ID_usuario INTEGER,\n" +
-                    "    ID_produto INTEGER,\n" +
-                    "    Data TEXT,\n" +
-                    "    FOREIGN KEY (ID_usuario) REFERENCES Usuarios(ID_usuario),\n" +
-                    "    FOREIGN KEY (ID_produto) REFERENCES Produtos(ID_produto)\n" +
-                    ");\n";
+            sql = """
+                    CREATE TABLE Vendas (
+                        ID_venda INTEGER PRIMARY KEY AUTOINCREMENT,
+                        ID_usuario INTEGER,
+                        ID_produto INTEGER,
+                        Data TEXT,
+                        FOREIGN KEY (ID_usuario) REFERENCES Usuarios(ID_usuario),
+                        FOREIGN KEY (ID_produto) REFERENCES Produtos(ID_produto)
+                    );
+                    """;
 
             stmt.execute(sql);
 
@@ -111,7 +120,6 @@ public class Database {
         }
         return conn;
     }
-
 
     protected ArrayList<String> selectProdutosDestaque() {
         ArrayList<String> arrayRetornavel = new ArrayList<>();
@@ -178,7 +186,7 @@ public class Database {
     }
 
     protected void selectProdutoCategoria(String categoria) {
-        try (Connection conn = this.connect();){
+        try (Connection conn = this.connect()){
             String query = "SELECT \n" +
                     "Produtos.Nome, Produtos.Preco " +
                     "FROM " +
@@ -204,7 +212,7 @@ public class Database {
     }
 
     protected void selectProdutoPesquisa(String produto) {
-        try (Connection conn = this.connect();){
+        try (Connection conn = this.connect()){
             String query = "SELECT " +
                     "ID_produto, Nome, Preco " +
                     "FROM Produtos " +
@@ -256,7 +264,7 @@ public class Database {
     }
 
     protected boolean login(String usuario, String senha, int tipo_usuario) {
-        try( Connection conn = this.connect();) {
+        try( Connection conn = this.connect()) {
             String query = "SELECT (count(*) > 0) as found FROM Usuarios " +
                     "WHERE " +
                     "login LIKE ? AND " +
@@ -306,8 +314,9 @@ public class Database {
             }
         }
     }
+
     protected int idUsuario() {
-        try (Connection conn = this.connect();){
+        try (Connection conn = this.connect()){
             String query = "SELECT " +
                     "ID_usuario " +
                     "FROM Usuarios " +
@@ -326,5 +335,115 @@ public class Database {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    protected void listaCompras() {
+        int ID_usuario = idUsuario();
+        try (Connection conn = this.connect()){
+            String query = "SELECT p.Nome as NomeProduto, p.Preco as precoProduto, " +
+                    "v.Data as DataCompra," +
+                    "u.Nome as NomeUsuario " +
+                    "from Produtos as p " +
+                    "INNER JOIN Vendas as v " +
+                    "ON p.ID_produto = v.ID_produto " +
+                    "INNER JOIN Usuarios u " +
+                    "ON u.ID_usuario = v.ID_usuario " +
+                    "WHERE u.ID_usuario = ?";
+
+            PreparedStatement pst = conn.prepareStatement(query);
+            pst.setInt(1, ID_usuario);
+
+            ResultSet rs = pst.executeQuery();
+
+            while (rs.next()) {
+                System.out.printf("\nNome do produto: %s; \nPreco: \n%s;\nData da compra: %s;\nNome do usuario: %s;\n",
+                        rs.getString("NomeProduto"), rs.getString("precoProduto"),
+                        rs.getString("DataCompra"), rs.getString("NomeUsuario"));
+            }
+
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected void listaVendas() {
+        int ID_usuario = idUsuario();
+        try (Connection conn = this.connect()){
+            String query =  "SELECT p.Nome as NomeProduto, p.Preco as precoProduto, \n" +
+                    "c.Nome as Categorias, u.Nome as NomeUsuario, p.ID_produto as idProduto\n" +
+                    "FROM Produtos as p\n" +
+                    "inner join Usuarios as u on u.ID_usuario = p.ID_usuario\n" +
+                    "inner join Categorias as c on c.ID_categoria = p.ID_categoria\n" +
+                    "WHERE u.ID_usuario = ?";
+
+            PreparedStatement pst = conn.prepareStatement(query);
+            pst.setInt(1, ID_usuario);
+
+            ResultSet rs = pst.executeQuery();
+            System.out.println(ID_usuario);
+            while (rs.next()) {
+
+                System.out.printf("\nNome do produto: %s; \nPreco: \n%s;\nData da compra: %s;\nNumero de Usuario: %s; \nID produto: %s\n",
+                        rs.getString("NomeProduto"), rs.getString("precoProduto"), rs.getString("Categorias"),
+                        rs.getString("NomeUsuario"), rs.getString("idProduto"));
+            }
+
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected void criarProduto(String nome, float preco, int id_categoria) {
+        int ID_usuario = idUsuario();
+        String sql = "INSERT INTO " +
+                "Produtos(Nome, Preco, ID_usuario, ID_categoria) " +
+                "VALUES(?, ?, ?, ?)";
+
+        try (Connection conn = this.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, nome);
+            pstmt.setFloat(2, preco);
+            pstmt.setInt(3, ID_usuario);
+            pstmt.setInt(4, id_categoria);
+            pstmt.executeUpdate();
+
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected void listarCategorias(){
+        try (Connection conn = this.connect()){
+            String query = "SELECT " +
+                    "* " +
+                    "FROM Categorias " ;
+
+
+            PreparedStatement pst = conn.prepareStatement(query);
+
+            ResultSet rs = pst.executeQuery();
+
+            while (rs.next()) {
+                System.out.printf("\nID: %s; \nNome: %s;\n",
+                        rs.getString("ID_categoria"), rs.getString("Nome"));
+            }
+
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected void deletarAnuncio(int ID_produtos){
+
+        try (Connection conn = this.connect()){
+            String query = "DELETE FROM Produtos WHERE ID_produto = ?";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setInt(1, ID_produtos);
+
+            pstmt.executeUpdate();
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }

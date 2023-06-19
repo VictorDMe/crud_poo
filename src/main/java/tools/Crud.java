@@ -26,9 +26,9 @@ public class Crud {
 
         System.out.println("================================================================");
         System.out.printf("             PATOSHOP - HOME - %s\n", TIPOUSUARIO);
-        System.out.println("================================================================");
-        System.out.println(" 1- Login || 2- Registro || 3- Buscar || 4- Compras || 99- Sair ");
-        System.out.println("----------------------------------------------------------------");
+        System.out.println("===============================================================================");
+        System.out.println(cor.amarelo(" 1- Login || 2- Registro || 3- Buscar || 4- Compras || 5- Vender || 99- Sair "));
+        System.out.println("-------------------------------------------------------------------------------");
         System.out.println("3- Buscar produtos");
         System.out.println("----------------------------------------------------------------");
         System.out.println("Produtos em destaque:");
@@ -55,13 +55,13 @@ public class Crud {
                 + "- %s \n", catagoriasDestaque.get(0), catagoriasDestaque.get(1), catagoriasDestaque.get(2));
         System.out.println("----------------------------------------------------------------");
 
-        System.out.print("Digite sua opcao: ");
+        System.out.print(cor.ciano("Digite sua opcao: "));
 
         option = scan.nextInt();
         return option;
     }
 
-    public static void login() {
+    public static void login() throws InterruptedException {
         int tipo_usuario;
         String usuario;
         String senha;
@@ -94,17 +94,20 @@ public class Crud {
                 switch (tipo_usuario) {
                     case 1:
                         TIPOUSUARIO = "Cliente";
-                        USUARIO = usuario;
                         break;
                     case 2:
                         TIPOUSUARIO = "Anunciante";
+
                         break;
                     case 3:
                         TIPOUSUARIO = "Super Admin";
                         break;
                 }
+                USUARIO = usuario;
             } else System.out.println(cor.vermelho("Login inválido."));
         } else TIPOUSUARIO = "Acesso Publico";
+
+        Thread.sleep(2000);
     }
 
     public static void registro() throws InterruptedException {
@@ -149,14 +152,13 @@ public class Crud {
             System.out.print("Email: ");
             email = scan.nextLine();
 
-            Thread.sleep(2000);
-
             db.registrarUsuario(tipoUsuario, username, password,
                     nome, endereco, telefone, email);
         }
+        Thread.sleep(2000);
     }
 
-    public static void buscar() {
+    public static void buscar() throws InterruptedException {
         String categoriaDigitada;
         String produtoPesquisa;
         int escolhaBusca;
@@ -173,7 +175,7 @@ public class Crud {
             scan.nextLine();
 
             if (escolhaBusca == 1) {
-                System.out.print("Digite a categoria: ");
+                System.out.print(cor.ciano("Digite a categoria: "));
                 categoriaDigitada = scan.nextLine();
                 db.selectProdutoCategoria(categoriaDigitada);
             }
@@ -184,8 +186,11 @@ public class Crud {
                 db.selectProdutoPesquisa(produtoPesquisa);
             }
         } while (escolhaBusca == 1 || escolhaBusca == 2);
+
+        Thread.sleep(2000);
     }
-    public static void comprar() {
+
+    public static void comprar() throws InterruptedException {
         if (Objects.equals(TIPOUSUARIO, "Cliente")) {
 
             int escolha, idProduto;
@@ -195,35 +200,97 @@ public class Crud {
             System.out.println("================================================================");
 
             do {
-               
                 System.out.println("1 - Listar Produtos");
                 System.out.println("2 - Buscar Produto");
-                System.out.printf("Qual opcao: ");
+                System.out.println("3 - Listar Compras");
+                System.out.println("4 - Sair");
+                System.out.print(cor.ciano("Qual opcao: "));
                 escolha = scan.nextInt();
 
-                if (escolha != 1 && escolha != 2) System.out.println("\nOpcao invalida, tente novamente.");
-            } while (escolha != 1 && escolha != 2);
+                if (escolha < 1 || escolha > 4)
+                    System.out.println(cor.vermelho("\nOpcao invalida, tente novamente."));
+            } while (escolha < 1 || escolha > 4);
 
-            switch (escolha) {
-                case 1 -> db.selectProdutoPesquisa("");
-                case 2 -> {
-                    System.out.print("Digite o nome do produto: ");
-                    scan.nextLine();
-                    nomeProduto = scan.nextLine();
-                    db.selectProdutoPesquisa(nomeProduto);
+            if (escolha != 4) {
+                switch (escolha) {
+                    case 1 -> db.selectProdutoPesquisa("");
+                    case 2 -> {
+                        System.out.print("Digite o nome do produto: ");
+                        scan.nextLine();
+                        nomeProduto = scan.nextLine();
+                        db.selectProdutoPesquisa(nomeProduto);
+                    }
+                    case 3 -> db.listaCompras();
+
+                }
+                scan.nextLine();
+
+                if (escolha == 1 || escolha == 2) {
+                    System.out.print("Digite o ID do produto: ");
+                    idProduto = scan.nextInt();
+                    db.compra(idProduto);
+                    System.out.println(cor.verde("Compra efetuada com sucesso."));
+                }
+
+                else {
+                    System.out.println(cor.vermelho("Voce nao esta logado como cliente."));
                 }
             }
+        }
+        Thread.sleep(3000);
+    }
 
+    public static void vender() throws InterruptedException {
+        String nome;
+        Float preco;
+        int categoria, id_produto;
+
+        if (Objects.equals(TIPOUSUARIO, "Anunciante")) {
+
+            int escolha;
+
+            System.out.println("================================================================");
+            System.out.println("                      PATOSHOP - Anuncio");
+            System.out.println("================================================================");
+
+            do {
+                System.out.println("1 - Criar Anuncio");
+                System.out.println("2 - Listar Anuncio");
+                System.out.println("3 - Deletar Produto");
+                System.out.print(cor.ciano("Qual opcao: "));
+                escolha = scan.nextInt();
+
+                if (escolha != 1 && escolha != 2 && escolha != 3) System.out.println("\nOpcao invalida, tente novamente.");
+            } while (escolha != 1 && escolha != 2 && escolha != 3);
+
+            switch (escolha) {
+                case 1 ->{
+                    scan.nextLine();
+                    System.out.print("Nome do produto: ");
+                    nome = scan.nextLine();
+
+                    System.out.print("Preco do produto: ");
+                    preco = scan.nextFloat();
+
+                    db.listarCategorias();
+                    System.out.print("Categoria: ");
+                    categoria = scan.nextInt();
+
+                    db.criarProduto(nome, preco, categoria);
+                }
+                case 2 -> db.listaVendas();
+                case 3 -> {
+                    db.listaVendas();
+                    System.out.print(cor.ciano("Digite o ID do produto que voce deseja deletar: "));
+                    id_produto = scan.nextInt();
+                    db.deletarAnuncio(id_produto);
+
+                    System.out.println(cor.amarelo("Anuncio Deletado"));
+                }
+            }
             scan.nextLine();
 
-            System.out.print("Digite o ID do produto: ");
-            idProduto = scan.nextInt();
-            db.compra(idProduto);
-            System.out.println(cor.verde("Compra efetuada com sucesso."));
-
-        } else {
-            System.out.println(cor.vermelho("Voce nao esta logado como cliente."));
+        Thread.sleep(3000);
         }
     }
 }
-
