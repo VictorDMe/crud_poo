@@ -170,6 +170,7 @@ public class Crud {
             System.out.println("Como deseja buscar?: ");
             System.out.println("1 - Por categoria");
             System.out.println("2 - Por nome do produto");
+            System.out.println("99 - Sair ");
             System.out.print("Buscar: ");
             escolhaBusca = scan.nextInt();
             scan.nextLine();
